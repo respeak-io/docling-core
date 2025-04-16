@@ -63,6 +63,7 @@ class HybridChunker(BaseChunker):
     )
     max_tokens: int = None  # type: ignore[assignment]
     merge_peers: bool = True
+    traverse_pictures: bool = False  # Whether to traverse images in the document
 
     serializer_provider: BaseSerializerProvider = ChunkingSerializerProvider()
 
@@ -82,7 +83,10 @@ class HybridChunker(BaseChunker):
     @computed_field  # type: ignore[misc]
     @cached_property
     def _inner_chunker(self) -> HierarchicalChunker:
-        return HierarchicalChunker(serializer_provider=self.serializer_provider)
+        return HierarchicalChunker(
+            serializer_provider=self.serializer_provider,
+            traverse_pictures=self.traverse_pictures,
+        )
 
     def _count_text_tokens(self, text: Optional[Union[str, list[str]]]):
         if text is None:

@@ -205,6 +205,7 @@ class HierarchicalChunker(BaseChunker):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     serializer_provider: BaseSerializerProvider = ChunkingSerializerProvider()
+    traverse_pictures: bool = False  # Whether to traverse images in the document
 
     # deprecated:
     merge_list_items: Annotated[bool, Field(deprecated=True)] = True
@@ -227,7 +228,7 @@ class HierarchicalChunker(BaseChunker):
         visited: set[str] = set()
         ser_res = create_ser_result()
         excluded_refs = my_doc_ser.get_excluded_refs(**kwargs)
-        for item, level in dl_doc.iterate_items(with_groups=True):
+        for item, level in dl_doc.iterate_items(with_groups=True, traverse_pictures=self.traverse_pictures):
             if item.self_ref in excluded_refs:
                 continue
             if isinstance(item, (TitleItem, SectionHeaderItem)):
